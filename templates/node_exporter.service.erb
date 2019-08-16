@@ -1,0 +1,13 @@
+[Unit]
+Description=Node Exporter <%= node['inspec-profile-demo-cookbook']['version'] %>
+
+[Service]
+Type=simple
+PIDFile=<%= node['inspec-profile-demo-cookbook']['path']['pid'] %>
+StandardOutput=<%= node['inspec-profile-demo-cookbook']['dir']['logs'] %>/node_exporter.logs
+StandardError=<%= node['inspec-profile-demo-cookbook']['dir']['logs'] %>/node_exporter.error
+ExecStart=<%= node['inspec-profile-demo-cookbook']['path']['bin'] %>
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

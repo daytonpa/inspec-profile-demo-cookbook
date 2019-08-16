@@ -71,32 +71,33 @@ file node['inspec-profile-demo-cookbook']['path']['pid'] do
   group node_exporter_group
 end
 
+# Create a directory and file for logs
+directory '/var/log/node_exporter' do
+  owner node_exporter_user
+  group node_exporter_group
+  mode '0700'
+end
+
+
 # Generate the systemd file for node_exporter
 if node['platform_version'] == ('16.04', '18.04', '2')
-  file '/etc/systemd/system/node_exporter.service' do
+  template '/etc/systemd/system/node_exporter.service' do
     owner node_exporter_user
     group node_exporter_group
-    content <<-CONTENT
-[Unit]
-Description=Node Exporter #{node_exporter_version}
-
-[Service]
-PIDFile=#{node['inspec-profile-demo-cookbook']['path']['pid']}
-ExecStart=#{node['inspec-profile-demo-cookbook']['path']['bin']}
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-    CONTENT
+    source 'node_exporter.service.erb'
     notifies :run, 'execute[reload]', :immediately
   end
-
   execute 'reload' do
     command 'systemctl daemon-reload'
     action :nothing
   end
 else
-  template
+  template '/etc/rc.d/init.d/node_exporter' do
+    owner node_exporter_user
+    group node_exporter_group
+    source 'node_exporter.init.d.erb'
+    notifies :restart, 'service[node_exporter]', :delayed
+  end
 end
 
 service 'node_exporter' do

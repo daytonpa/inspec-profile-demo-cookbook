@@ -10,6 +10,9 @@ default['inspec-profile-demo-cookbook'].tap do |demo|
     c['hour'] = '*/12'
   end
 
+  demo['dir'].tap do |d|
+    d['logs'] = '/var/log/node_exporter'
+
   demo['path'].tap do |path|
     path['bin'] = '/usr/bin/node_exporter'
     path['pid'] = '/var/run/node_exporter.pid'
