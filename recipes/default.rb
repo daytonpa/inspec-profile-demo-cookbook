@@ -7,7 +7,18 @@
 # This is a demo cookbook for testing InSpec Profiles
 # We're installing
 
-node_exporter_version = '0.18.1'
+node_exporter_version = node['inspec-profile-demo-cookbook']['version']
+node_exporter_user = node['inspec-profile-demo-cookbook']['user']
+node_exporter_group = node['inspec-profile-demo-cookbook']['group']
+
+group node_exporter_group do unless node_exporter_group == 'root'
+  system true
+end
+user node_exporter_user do unless node_exporter_user == 'root'
+  manage_home false
+  group node_exporter_group
+  system true
+end
 
 case node['platform']
 when 'ubuntu' 
@@ -17,6 +28,8 @@ when 'ubuntu'
   end
 
   remote_file 'node_exporter' do
+    owner node_exporter_user
+    group node_exporter_group
     path "/tmp/node_exporter-#{node_exporter_version}.linux-amd64.tar.gz"
     source "https://github.com/prometheus/node_exporter/releases/download/v#{node_exporter_version}/node_exporter-#{node_exporter_version}.linux-amd64.tar.gz"
     notifies :run, 'execute[unpack_and_install_node_exporter]', :immediately
@@ -26,7 +39,7 @@ when 'ubuntu'
     cwd '/tmp'
     command <<-COMMAND
       tar -xzf node_exporter-#{node_exporter_version}.linux-amd64.tar.gz --strip-components=1 &&
-        mv /tmp/node_exporter /usr/bin/node_exporter
+        mv /tmp/node_exporter #{node['inspec-profile-demo-cookbook']['path']['bin']}
     COMMAND
     not_if 'systemctl status node_exporter | grep -q "active (running)"'
   end
@@ -34,8 +47,8 @@ when 'ubuntu'
   when 'amazon'
 
   cron 'yum' do
-    minute '0'
-    hour '*/12'
+    minute node['inspec-profile-demo-cookbook']['cron']['minute']
+    hour node['inspec-profile-demo-cookbook']['cron']['hour']
     command 'yum update -y'
     notifies :run, 'execute[yum]', :immediately
   end
@@ -53,18 +66,23 @@ when 'ubuntu'
 end
 
 # Create a PID file for the node_exporter daemon
-file '/var/run/node_exporter.pid'
+file node['inspec-profile-demo-cookbook']['path']['pid'] do
+  owner node_exporter_user
+  group node_exporter_group
+end
 
 # Generate the systemd file for node_exporter
 if node['platform_version'] == ('16.04', '18.04', '2')
   file '/etc/systemd/system/node_exporter.service' do
+    owner node_exporter_user
+    group node_exporter_group
     content <<-CONTENT
 [Unit]
 Description=Node Exporter #{node_exporter_version}
 
 [Service]
-PIDFile=/var/run/node_exporter.pid
-ExecStart=/usr/bin/node_exporter
+PIDFile=#{node['inspec-profile-demo-cookbook']['path']['pid']}
+ExecStart=#{node['inspec-profile-demo-cookbook']['path']['bin']}
 Restart=on-failure
 
 [Install]
@@ -77,7 +95,8 @@ WantedBy=multi-user.target
     command 'systemctl daemon-reload'
     action :nothing
   end
-
+else
+  template
 end
 
 service 'node_exporter' do
