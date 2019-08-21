@@ -21,8 +21,10 @@ verifier:
   name: inspec
 
 platforms:
+  # - name: ubuntu-16.04
   - name: ubuntu-18.04
-  # - name: centos-7
+  # - name: amazon-2017.09
+  # - name: amazon-2
 
 suites:
   - name: default
