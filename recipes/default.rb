@@ -7,17 +7,25 @@
 # This is a demo cookbook for testing InSpec Profiles
 # We're installing
 
+case node['hostnamectl']['architecture']
+when 'x86-64'
+  arch = 'amd64'
+else
+  arch = '386'
+end
+
 node_exporter_version = node['inspec-profile-demo-cookbook']['version']
 node_exporter_user = node['inspec-profile-demo-cookbook']['user']
 node_exporter_group = node['inspec-profile-demo-cookbook']['group']
 
-group node_exporter_group do unless node_exporter_group == 'root'
+group node_exporter_group do
   system true
+  only_if { node_exporter_group != 'root' }
 end
-user node_exporter_user do unless node_exporter_user == 'root'
-  manage_home false
+user node_exporter_user do
   group node_exporter_group
   system true
+  only_if { node_exporter_user != 'root' }
 end
 
 case node['platform']
@@ -27,24 +35,7 @@ when 'ubuntu'
     action :periodic
   end
 
-  remote_file 'node_exporter' do
-    owner node_exporter_user
-    group node_exporter_group
-    path "/tmp/node_exporter-#{node_exporter_version}.linux-amd64.tar.gz"
-    source "https://github.com/prometheus/node_exporter/releases/download/v#{node_exporter_version}/node_exporter-#{node_exporter_version}.linux-amd64.tar.gz"
-    notifies :run, 'execute[unpack_and_install_node_exporter]', :immediately
-    not_if "/usr/bin/node_exporter --version | grep -q #{node_exporter_version}"
-  end
-  execute 'unpack_and_install_node_exportnode_exporter_versionnode_exporter_versionnode_exporter_versionnode_exporter_versioner' do
-    cwd '/tmp'
-    command <<-COMMAND
-      tar -xzf node_exporter-#{node_exporter_version}.linux-amd64.tar.gz --strip-components=1 &&
-        mv /tmp/node_exporter #{node['inspec-profile-demo-cookbook']['path']['bin']}
-    COMMAND
-    not_if 'systemctl status node_exporter | grep -q "active (running)"'
-  end
-
-  when 'amazon'
+when 'amazon'
 
   cron 'yum' do
     minute node['inspec-profile-demo-cookbook']['cron']['minute']
@@ -57,30 +48,52 @@ when 'ubuntu'
     action :nothing
   end
 
-  case node['platform_version']
-  when '2017.09'
+end
 
-  when '2'
-
-  end
+remote_file 'node_exporter' do
+  owner node_exporter_user
+  group node_exporter_group
+  path "/tmp/node_exporter-#{node_exporter_version}.linux-#{arch}.tar.gz"
+  source "https://github.com/prometheus/node_exporter/releases/download/v#{node_exporter_version}/node_exporter-#{node_exporter_version}.linux-#{arch}.tar.gz"
+  notifies :run, 'execute[unpack_and_install_node_exporter]', :immediately
+  not_if "/usr/bin/node_exporter --version | grep -q #{node_exporter_version}"
+end
+execute 'unpack_and_install_node_exporter' do
+  cwd '/tmp'
+  command <<-COMMAND
+    tar -xzf node_exporter-#{node_exporter_version}.linux-#{arch}.tar.gz --strip-components=1 &&
+      mv /tmp/node_exporter #{node['inspec-profile-demo-cookbook']['path']['bin']}
+  COMMAND
+  not_if 'systemctl status node_exporter | grep -q "active (running)"'
 end
 
 # Create a PID file for the node_exporter daemon
 file node['inspec-profile-demo-cookbook']['path']['pid'] do
   owner node_exporter_user
   group node_exporter_group
+  mode '0644'
 end
 
 # Create a directory and file for logs
-directory '/var/log/node_exporter' do
+directory node['inspec-profile-demo-cookbook']['dir']['logs'] do
   owner node_exporter_user
   group node_exporter_group
-  mode '0700'
+  mode '0755'
+end
+[
+  "#{node['inspec-profile-demo-cookbook']['dir']['logs']}/node_exporter.logs",
+  "#{node['inspec-profile-demo-cookbook']['dir']['logs']}/node_exporter.error"
+].each do |log_file|
+  file log_file do
+    owner node_exporter_user
+    group node_exporter_group
+    mode '0644'
+  end
 end
 
-
-# Generate the systemd file for node_exporter
-if node['platform_version'] == ('16.04', '18.04', '2')
+# Generate the systemd/init.d file for node_exporter
+case node['platform_version'] 
+when '16.04', '18.04', '2'
   template '/etc/systemd/system/node_exporter.service' do
     owner node_exporter_user
     group node_exporter_group

@@ -14,7 +14,7 @@ USER=<%= node['inspec-profile-demo-cookbook']['user'] %>
 PIDFILE=<%= node['inspec-profile-demo-cookbook']['path']['pid'] %>
 LOGFILE=<%= node['inspec-profile-demo-cookbook']['dir']['logs'] %>/$NAME.log
 
-ARGS=""
+ARGS="<%= generate_node_exporter_config %>"
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
 do_start_prepare() {

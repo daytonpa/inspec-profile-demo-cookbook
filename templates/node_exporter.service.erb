@@ -6,7 +6,7 @@ Type=simple
 PIDFile=<%= node['inspec-profile-demo-cookbook']['path']['pid'] %>
 StandardOutput=<%= node['inspec-profile-demo-cookbook']['dir']['logs'] %>/node_exporter.logs
 StandardError=<%= node['inspec-profile-demo-cookbook']['dir']['logs'] %>/node_exporter.error
-ExecStart=<%= node['inspec-profile-demo-cookbook']['path']['bin'] %>
+ExecStart=<%= node['inspec-profile-demo-cookbook']['path']['bin'] %> <%= generate_node_exporter_config %>
 Restart=on-failure
 
 [Install]
