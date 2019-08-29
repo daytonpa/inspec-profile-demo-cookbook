@@ -1,12 +1,12 @@
 #
-# Cookbook:: inspec-profile-demo-cookbook
+# Cookbook:: node_exporter
 # Spec:: default
 #
 # Copyright:: 2019, The Authors, All Rights Reserved.
 
 require 'spec_helper'
 
-describe 'inspec-profile-demo-cookbook::default' do
+describe 'node_exporter::default' do
   context 'When all attributes are default, on Ubuntu 18.04' do
     # for a complete list of available platforms and versions see:
     # https://github.com/chefspec/fauxhai/blob/master/PLATFORMS.md

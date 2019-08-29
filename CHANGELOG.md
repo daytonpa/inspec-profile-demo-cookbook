@@ -1,4 +1,4 @@
-# inspec-profile-demo-cookbook CHANGELOG
+# node_exporter CHANGELOG
 
 This file is used to list changes made in each version of the inspec-profile-demo-cookbook cookbook.
 

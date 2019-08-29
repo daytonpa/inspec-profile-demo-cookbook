@@ -4,13 +4,13 @@
 # https://docs.chef.io/policyfile.html
 
 # A name that describes what the system you're building with Chef does.
-name 'inspec-profile-demo-cookbook'
+name 'node_exporter'
 
 # Where to find external cookbooks:
 default_source :supermarket
 
 # run_list: chef-client will run these recipes in the order specified.
-run_list 'inspec-profile-demo-cookbook::default'
+run_list 'node_exporter::default'
 
 # Specify a custom source for a single cookbook:
-cookbook 'inspec-profile-demo-cookbook', path: '.'
+cookbook 'node_exporter', path: '.'

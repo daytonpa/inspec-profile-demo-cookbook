@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          Node Exporter <%= node['inspec-profile-demo-cookbook']['version'] %>
+# Provides:          Node Exporter <%= node['node_exporter']['version'] %>
 # Required-Start:    $local_fs $network $named $time $syslog
 # Required-Stop:     $local_fs $network $named $time $syslog
 # Default-Start:     2 3 4 5
@@ -8,11 +8,11 @@
 # Description:       Node exporter for prometheus written in Go
 ### END INIT INFO
 
-DAEMON=<%= node['inspec-profile-demo-cookbook']['path']['bin'] %>
+DAEMON=<%= node['node_exporter']['path']['bin'] %>
 NAME=node_exporter
-USER=<%= node['inspec-profile-demo-cookbook']['user'] %>
-PIDFILE=<%= node['inspec-profile-demo-cookbook']['path']['pid'] %>
-LOGFILE=<%= node['inspec-profile-demo-cookbook']['dir']['logs'] %>/$NAME.log
+USER=<%= node['node_exporter']['user'] %>
+PIDFILE=<%= node['node_exporter']['path']['pid'] %>
+LOGFILE=<%= node['node_exporter']['dir']['logs'] %>/$NAME.log
 
 ARGS="<%= generate_node_exporter_config %>"
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME

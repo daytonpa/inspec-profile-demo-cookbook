@@ -1,5 +1,5 @@
 #
-# Cookbook:: inspec-profile-demo-cookbook
+# Cookbook:: node_exporter
 # Recipe:: default
 #
 # Copyright:: 2019, The Authors, All Rights Reserved.
@@ -14,9 +14,10 @@ else
   arch = '386'
 end
 
-node_exporter_version = node['inspec-profile-demo-cookbook']['version']
-node_exporter_user = node['inspec-profile-demo-cookbook']['user']
-node_exporter_group = node['inspec-profile-demo-cookbook']['group']
+node_exporter_version = node['node_exporter']['version']
+node_exporter_user = node['node_exporter']['user']
+node_exporter_group = node['node_exporter']['group']
+node_exporter_log_dir = File.expand_path(File.dirname(node['node_exporter']['path']['logs']))
 
 group node_exporter_group do
   system true
@@ -38,8 +39,8 @@ when 'ubuntu'
 when 'amazon'
 
   cron 'yum' do
-    minute node['inspec-profile-demo-cookbook']['cron']['minute']
-    hour node['inspec-profile-demo-cookbook']['cron']['hour']
+    minute node['node_exporter']['cron']['minute']
+    hour node['node_exporter']['cron']['hour']
     command 'yum update -y'
     notifies :run, 'execute[yum]', :immediately
   end
@@ -62,27 +63,33 @@ execute 'unpack_and_install_node_exporter' do
   cwd '/tmp'
   command <<-COMMAND
     tar -xzf node_exporter-#{node_exporter_version}.linux-#{arch}.tar.gz --strip-components=1 &&
-      mv /tmp/node_exporter #{node['inspec-profile-demo-cookbook']['path']['bin']}
+      mv /tmp/node_exporter #{node['node_exporter']['path']['bin']}
   COMMAND
   not_if 'systemctl status node_exporter | grep -q "active (running)"'
 end
 
 # Create a PID file for the node_exporter daemon
-file node['inspec-profile-demo-cookbook']['path']['pid'] do
+file node['node_exporter']['path']['pid'] do
   owner node_exporter_user
   group node_exporter_group
   mode '0644'
 end
 
 # Create a directory and file for logs
-directory node['inspec-profile-demo-cookbook']['dir']['logs'] do
+directory node_exporter_log_dir do
   owner node_exporter_user
   group node_exporter_group
-  mode '0755'
+  mode '0750'
 end
+file node['node_exporter']['path']['logs'] do
+  owner node_exporter_user
+  group node_exporter_group
+  mode '0640'
+end
+
 [
-  "#{node['inspec-profile-demo-cookbook']['dir']['logs']}/node_exporter.logs",
-  "#{node['inspec-profile-demo-cookbook']['dir']['logs']}/node_exporter.error"
+  "#{node['node_exporter']['dir']['logs']}/node_exporter.logs",
+  "#{node['node_exporter']['dir']['logs']}/node_exporter.error"
 ].each do |log_file|
   file log_file do
     owner node_exporter_user
