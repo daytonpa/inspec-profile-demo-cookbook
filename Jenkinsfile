@@ -87,6 +87,7 @@ node {
             sh 'rm -Rf ./*'
         } catch (error) {
             echo '\'Cleanup\' Stage ran into errors'
+            throw error
         }
     }        
 }
