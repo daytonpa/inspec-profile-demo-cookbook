@@ -33,7 +33,7 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@master
       - name: 'Converge/Test'
-        uses: daytonpa@cookbook-actions@master
+        uses: daytonpa/cookbook-actions@master
         with:
           chef_actions_subcommand: 'kitchen'
         env:
