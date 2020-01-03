@@ -1,20 +1,11 @@
-
-def generate_node_exporter_config()
+def generate_node_exporter_config
   @config = ''
   node['node_exporter']['config']['options'].each do |config_key, config_value|
-    case config_value
-    when '', nil
-    else
-      @config << "--#{config_key}=#{config_value} "
-    end
+    @config << "--#{config_key}=#{config_value} " unless config_value.nil? || config_value == /\s+/ || config_value == ''
   end
   node['node_exporter']['config']['collectors'].each do |config_key, config_value|
-    case config_value
-    when true
-      @config << "--collector.#{config_key} "
-    else
-      @config << "--no-collector.#{config_key} "
-    end
+    @config << "--collector.#{config_key} " if config_value == true
+    @config << "--no-collector.#{config_key} " if config_value == false
   end
   @config
 end

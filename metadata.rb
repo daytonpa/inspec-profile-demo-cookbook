@@ -1,7 +1,7 @@
 name 'node_exporter'
 maintainer 'Patrick Dayton'
-maintainer_email 'myemailis@notforyou.toobad'
-license 'All Rights Reserved'
+maintainer_email 'daytonpa@gmail.com'
+license 'Apache-2.0'
 description 'Installs/Configures node_exporter'
 long_description 'Installs/Configures node_exporter'
 version '1.0.1'
@@ -19,11 +19,6 @@ issues_url 'https://github.com/daytonpa/node_exporter/issues'
 #
 source_url 'https://github.com/daytonpa/node_exporter'
 
-{
-  'ubuntu' => ['16.04', '18.04'],
-  'amazon' => ['2017.09', '2']
-}.each do |platform, platform_versions|
-  platform_versions.each do |version|
-    supports platform, version
-  end
-end
+supports 'amazon'
+supports 'centos'
+supports 'ubuntu'
