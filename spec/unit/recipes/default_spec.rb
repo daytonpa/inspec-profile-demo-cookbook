@@ -68,11 +68,6 @@ describe 'node_exporter::default' do
           )
         end
 
-        it 'creates a log directory and log file for the node exporter service' do
-          expect(chef_run).to create_directory('/var/log/node_exporter')
-          expect(chef_run).to create_file('/var/log/node_exporter/node_exporter.logs')
-        end
-
         it 'creates a daemon file for the node exporter service, and reloads the daemon service' do
           if chef_run.node['init_package'] == 'systemd'
             expect(chef_run).to create_template('/etc/systemd/system/node_exporter.service').with(

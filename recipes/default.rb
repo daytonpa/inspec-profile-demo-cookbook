@@ -10,7 +10,6 @@ arch = if node['kernel']['machine'] == 'x86_64'
          '386'
        end
 node_exporter_version = node['node_exporter']['version']
-node_exporter_log_dir = File.expand_path(File.dirname(node['node_exporter']['path']['logs']))
 
 group node['node_exporter']['group'] do
   system true
@@ -66,19 +65,6 @@ file node['node_exporter']['path']['pid'] do
   owner node['node_exporter']['user']
   group node['node_exporter']['group']
   mode '0644'
-end
-
-# Create a directory and file for logs
-directory node_exporter_log_dir do
-  owner node['node_exporter']['user']
-  group node['node_exporter']['group']
-  mode '0750'
-end
-
-file node['node_exporter']['path']['logs'] do
-  owner node['node_exporter']['user']
-  group node['node_exporter']['group']
-  mode '0640'
 end
 
 # Generate the systemd/init.d file for node_exporter

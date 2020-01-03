@@ -31,5 +31,5 @@ suites:
   - name: default
     verifier:
       inspec_tests:
-        - https://github.com/daytonpa/inspec-profile-demo
+        - https://github.com/daytonpa/node_exporter_inspec_profile
     attributes:

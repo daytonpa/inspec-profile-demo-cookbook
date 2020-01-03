@@ -6,9 +6,7 @@ Type=simple
 User=<%= node['node_exporter']['user'] %>
 Group=<%= node['node_exporter']['group'] %>
 PIDFile=<%= node['node_exporter']['path']['pid'] %>
-ExecStart=<%= node['node_exporter']['path']['bin'] %> \
-          <%= generate_node_exporter_config %> \
-          2>&1 <%= node['node_exporter']['path']['logs'] %>
+ExecStart=<%= node['node_exporter']['path']['bin'] %> <%= generate_node_exporter_config %>
 Restart=on-failure
 
 [Install]
