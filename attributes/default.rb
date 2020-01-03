@@ -1,29 +1,29 @@
 
 
-default['node_exporter'].tap do |demo|
-  demo['user'] = 'node_exporter'
-  demo['group'] = 'node_exporter'
-  demo['version'] = '0.18.1'
+default['node_exporter'].tap do |node_exp|
+  node_exp['user'] = 'node_exporter'
+  node_exp['group'] = 'node_exporter'
+  node_exp['version'] = '0.18.1'
 
-  demo['cron'].tap do |c|
+  node_exp['cron'].tap do |c|
     c['minute'] = '0'
     c['hour'] = '*/12'
   end
 
-  demo['path'].tap do |path|
+  node_exp['path'].tap do |path|
     path['bin'] = '/usr/bin/node_exporter'
     path['logs'] = '/var/log/node_exporter/node_exporter.logs'
     path['pid'] = '/var/run/node_exporter.pid'
   end
 
-  demo['config']['options'].tap do |opt|
+  node_exp['config']['options'].tap do |opt|
     opt['web.listen-address'] = ':9100'
     opt['web.telemetry-path'] = '/metrics'
     opt['web.max-requests'] = '40'
     opt['log.level'] = 'info'
     opt['log.format'] = 'logger:stderr'
   end
-  demo['config']['collectors'].tap do |collect|
+  node_exp['config']['collectors'].tap do |collect|
     collect['arp'] = nil
     collect['bcache'] = nil
     collect['bonding'] = nil
