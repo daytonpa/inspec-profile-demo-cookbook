@@ -1,6 +1,6 @@
 #!/groovy
 // Load our custom groovy library
-@Library('jenkins-pipeline-lib@master')_
+@Library('daytonpa-jenkinsfile-library@master')_
 
 node {
     def env
@@ -40,7 +40,7 @@ node {
             echo "INFO: Lint checking ${env} cookbook v${version}."
             try {
                 sh 'chef exec foodcritic .'
-                sh 'chef exec rubocop .'
+                sh 'chef exec cookstyle -D .'
             } catch (error) {
                 echo '\'Linting\' Stage ran into errors'
                 throw error

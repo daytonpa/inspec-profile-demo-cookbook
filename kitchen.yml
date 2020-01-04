@@ -1,6 +1,9 @@
 ---
 driver:
-  name: vagrant
+  name: <%= ENV['KITCHEN_DRIVER'] || 'vagrant' %>
+  <% if ENV['KITCHEN_DRIVER'] == 'docker' %>
+  remove_images: true
+  <% end %>
 
 ## The forwarded_port port feature lets you connect to ports on the VM guest via
 ## localhost on the host.
