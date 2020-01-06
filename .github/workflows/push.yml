@@ -14,4 +14,27 @@ jobs:
           chef_actions_subcommand: 'lint'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+  unit:
+    name: 'Unit Tests'
+    runs-on: ubuntu-18.04
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+      - name: 'Unit'
+        uses: daytonpa/cookbook-actions@master
+        with:
+          chef_actions_subcommand: 'unit'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  kitchen:
+    name: 'Test Kitchen'
+    runs-on: ubuntu-18.04
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+      - name: 'Test Kitchen'
+        uses: daytonpa/cookbook-actions@master
+        with:
+          chef_actions_subcommand: 'kitchen'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

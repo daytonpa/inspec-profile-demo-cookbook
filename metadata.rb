@@ -3,7 +3,6 @@ maintainer 'Patrick Dayton'
 maintainer_email 'daytonpa@gmail.com'
 license 'Apache-2.0'
 description 'Installs/Configures node_exporter'
-long_description 'Installs/Configures node_exporter'
 version '1.0.1'
 chef_version '>= 14.0'
 
